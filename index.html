@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#c9e8ef" />
+  <title>Bus Simulator BD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main id="game-shell">
+    <div id="scene" aria-label="3D bus driving game"></div>
+    <div class="vignette"></div>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Bus Simulator BD home"><span class="brand-mark">BD</span><span class="brand-name">BUS SIMULATOR <b>BD</b></span></a>
+      <div class="route-pill"><span class="route-dot"></span><span>HIGHWAY 01</span><i>•</i><span>DHAKA → CHITTAGONG</span></div>
+      <button id="sound-btn" class="icon-btn" aria-label="Toggle sound" title="Sound on/off"><span id="sound-icon">♫</span></button>
+    </header>
+    <section class="dashboard" aria-live="polite">
+      <div class="metric speed-metric"><div class="metric-label"><span class="tiny-icon">◉</span> SPEED</div><div class="speed-line"><strong id="speed-value">000</strong><span>KM/H</span></div><div class="speed-track"><i id="speed-bar"></i></div></div>
+      <div class="metric distance-metric"><div class="metric-label"><span class="tiny-icon">↗</span> DISTANCE</div><div class="distance-line"><strong id="distance-value">0.0</strong><span>KM</span></div><div class="route-progress"><i id="progress-bar"></i></div><div class="destination"><span>START</span><span>CHITTAGONG <b id="remaining-value">280 KM</b></span></div></div>
+      <div class="metric score-metric"><div class="metric-label"><span class="tiny-icon">✦</span> TRIP SCORE</div><div class="score-line"><strong id="score-value">00000</strong><span>PTS</span></div><div class="score-caption">SAFE DRIVING BONUS</div></div>
+    </section>
+    <div class="gear-badge"><span class="gear-dot"></span><span id="gear-value">D</span><small>AUTO</small></div>
+    <div class="hint" id="hint"><span>↔</span> KEEP LEFT · DRIVE SAFE</div>
+    <div id="toast" class="toast" aria-live="polite"></div>
+
+    <section id="welcome" class="modal-layer">
+      <div class="welcome-card">
+        <div class="eyebrow"><span></span> YOUR JOURNEY BEGINS HERE</div>
+        <h1>Bus Simulator<br><em>BD</em></h1>
+        <p class="welcome-copy">Take the wheel on the roads of Bangladesh.</p>
+        <div class="trip-card"><div class="trip-icon">⌁</div><div><b>Dhaka to Chittagong</b><span>Highway drive · 280 km route</span></div><div class="trip-arrow">↗</div></div>
+        <button id="start-btn" class="start-btn"><span>START YOUR ENGINE</span><b>→</b></button>
+        <div class="controls-note"><span>⌨</span> ARROW KEYS / WASD <i>·</i> <span>☝</span> TOUCH CONTROLS</div>
+      </div>
+      <div class="modal-foot">A LITTLE CARE GOES A LONG WAY <span>✦</span></div>
+    </section>
+    <section id="crash" class="modal-layer hidden">
+      <div class="welcome-card result-card"><div class="eyebrow"><span class="red-dot"></span> TRIP INTERRUPTED</div><h2>Easy there,<br><em>driver.</em></h2><p class="welcome-copy">A little more care will get you there.</p><div class="result-stats"><div><b id="final-distance">0.0 km</b><span>DISTANCE</span></div><div><b id="final-score">0 pts</b><span>TRIP SCORE</span></div></div><button id="retry-btn" class="start-btn"><span>DRIVE AGAIN</span><b>↻</b></button></div>
+    </section>
+    <div class="mobile-controls" id="mobile-controls">
+      <div class="steer-controls"><button data-control="left" aria-label="Steer left">‹</button><button data-control="right" aria-label="Steer right">›</button></div>
+      <div class="pedal-controls"><button data-control="brake" class="brake"><span>Ⅱ</span><small>BRAKE</small></button><button data-control="gas" class="gas"><span>▲</span><small>GO</small></button></div>
+    </div>
+    <div class="bottom-note"><span class="sun-icon">☀</span> CLEAR SKIES IN BANGLADESH <span class="bottom-divider"></span> <b>SAFE TRIP, DRIVER</b></div>
+    <div class="pause-wrap"><button id="pause-btn" class="pause-btn" aria-label="Pause game">Ⅱ</button></div>
+  </main>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
