@@ -4,49 +4,59 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#c9e8ef" />
-  <title>Bus Simulator BD</title>
+  <title>Bangladesh Bus Simulator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js"}}</script>
 </head>
 <body>
   <main id="game-shell">
-    <div id="scene" aria-label="3D bus driving game"></div>
+    <div id="scene" aria-label="3D Bangladesh bus simulator"></div>
     <div class="vignette"></div>
     <header class="topbar">
-      <a class="brand" href="#" aria-label="Bus Simulator BD home"><span class="brand-mark">BD</span><span class="brand-name">BUS SIMULATOR <b>BD</b></span></a>
-      <div class="route-pill"><span class="route-dot"></span><span>HIGHWAY 01</span><i>•</i><span>DHAKA → CHITTAGONG</span></div>
-      <button id="sound-btn" class="icon-btn" aria-label="Toggle sound" title="Sound on/off"><span id="sound-icon">♫</span></button>
+      <a class="brand" href="#" aria-label="Bangladesh Bus Simulator home"><span class="brand-mark">BD</span><span class="brand-name">BANGLADESH <b>BUS SIM</b></span></a>
+      <div class="location-pill"><span class="live-dot"></span><span id="location-name">DHAKA · GULISTAN</span><i>•</i><span>OPEN WORLD</span></div>
+      <button id="garage-btn" class="header-btn">▣ <span>GARAGE</span></button>
     </header>
     <section class="dashboard" aria-live="polite">
-      <div class="metric speed-metric"><div class="metric-label"><span class="tiny-icon">◉</span> SPEED</div><div class="speed-line"><strong id="speed-value">000</strong><span>KM/H</span></div><div class="speed-track"><i id="speed-bar"></i></div></div>
-      <div class="metric distance-metric"><div class="metric-label"><span class="tiny-icon">↗</span> DISTANCE</div><div class="distance-line"><strong id="distance-value">0.0</strong><span>KM</span></div><div class="route-progress"><i id="progress-bar"></i></div><div class="destination"><span>START</span><span>CHITTAGONG <b id="remaining-value">280 KM</b></span></div></div>
-      <div class="metric score-metric"><div class="metric-label"><span class="tiny-icon">✦</span> TRIP SCORE</div><div class="score-line"><strong id="score-value">00000</strong><span>PTS</span></div><div class="score-caption">SAFE DRIVING BONUS</div></div>
+      <div class="metric speed-metric"><div class="metric-label">SPEED · KM/H</div><div class="speed-line"><strong id="speed-value">000</strong><span id="gear-value">N</span></div><div class="speed-track"><i id="speed-bar"></i></div></div>
+      <div class="metric route-metric"><div class="metric-label">ACTIVE SERVICE</div><div class="route-title" id="route-title">Gulistan → Sadarghat</div><div class="route-sub" id="route-sub">Pick up passengers at Gulistan Terminal</div><div class="route-progress"><i id="progress-bar"></i></div></div>
+      <div class="metric passengers-metric"><div class="metric-label">ON BOARD</div><div class="passenger-line"><strong id="passenger-value">0</strong><span>/ 32</span></div><div class="route-sub" id="fare-value">FARE ৳0</div></div>
     </section>
-    <div class="gear-badge"><span class="gear-dot"></span><span id="gear-value">D</span><small>AUTO</small></div>
-    <div class="hint" id="hint"><span>↔</span> KEEP LEFT · DRIVE SAFE</div>
+    <div class="right-tools"><div class="gear-badge"><span class="gear-dot"></span><span id="drive-mode">PARK</span><small>GEAR</small></div><canvas id="minimap" width="180" height="180" aria-label="Map"></canvas><button id="camera-btn" class="camera-btn" title="Change camera">CAM · FOLLOW</button></div>
+    <div class="hint" id="hint"><b>WASD</b> DRIVE <i>·</i> <b>SPACE</b> BRAKE <i>·</i> <b>R</b> REVERSE</div>
     <div id="toast" class="toast" aria-live="polite"></div>
 
     <section id="welcome" class="modal-layer">
       <div class="welcome-card">
-        <div class="eyebrow"><span></span> YOUR JOURNEY BEGINS HERE</div>
-        <h1>Bus Simulator<br><em>BD</em></h1>
-        <p class="welcome-copy">Take the wheel on the roads of Bangladesh.</p>
-        <div class="trip-card"><div class="trip-icon">⌁</div><div><b>Dhaka to Chittagong</b><span>Highway drive · 280 km route</span></div><div class="trip-arrow">↗</div></div>
-        <button id="start-btn" class="start-btn"><span>START YOUR ENGINE</span><b>→</b></button>
-        <div class="controls-note"><span>⌨</span> ARROW KEYS / WASD <i>·</i> <span>☝</span> TOUCH CONTROLS</div>
+        <div class="eyebrow"><span></span> DHAKA · BANGLADESH</div>
+        <h1>Take the wheel.<br><em>Own the road.</em></h1>
+        <p class="welcome-copy">A living city, local traffic and a bus service that’s yours to drive.</p>
+        <label class="route-select-label" for="route-select">CHOOSE A SERVICE</label>
+        <select id="route-select" class="route-select"><option value="gulistan">Gulistan Terminal → Sadarghat</option><option value="village">Gulistan → Savar village</option><option value="airport">Gulistan → Airport Road</option></select>
+        <div class="feature-row"><span>▤ <b>OPEN CITY</b></span><span>◉ <b>TRAFFIC AI</b></span><span>♙ <b>PASSENGERS</b></span></div>
+        <button id="start-btn" class="start-btn"><span>START DRIVING</span><b>→</b></button>
+        <div class="controls-note">WASD / ARROWS TO DRIVE <i>·</i> SPACE BRAKE <i>·</i> R REVERSE <i>·</i> TOUCH ON MOBILE</div>
       </div>
-      <div class="modal-foot">A LITTLE CARE GOES A LONG WAY <span>✦</span></div>
+      <div class="modal-foot">DRIVE ON THE LEFT · SHARE THE ROAD <span>✦</span></div>
     </section>
-    <section id="crash" class="modal-layer hidden">
-      <div class="welcome-card result-card"><div class="eyebrow"><span class="red-dot"></span> TRIP INTERRUPTED</div><h2>Easy there,<br><em>driver.</em></h2><p class="welcome-copy">A little more care will get you there.</p><div class="result-stats"><div><b id="final-distance">0.0 km</b><span>DISTANCE</span></div><div><b id="final-score">0 pts</b><span>TRIP SCORE</span></div></div><button id="retry-btn" class="start-btn"><span>DRIVE AGAIN</span><b>↻</b></button></div>
+    <section id="garage" class="modal-layer hidden">
+      <div class="welcome-card garage-card">
+        <button class="close-btn" id="garage-close" aria-label="Close garage">×</button>
+        <div class="eyebrow"><span></span> YOUR FLEET</div><h2>Bus <em>garage</em></h2>
+        <p class="welcome-copy">Personalize your coach or load a custom GLB bus model.</p>
+        <div class="paint-row"><span>PAINT</span><button class="paint-swatch active" data-paint="#236e50" style="--paint:#236e50" aria-label="Green"></button><button class="paint-swatch" data-paint="#b53732" style="--paint:#b53732" aria-label="Red"></button><button class="paint-swatch" data-paint="#235a85" style="--paint:#235a85" aria-label="Blue"></button><button class="paint-swatch" data-paint="#d3a43c" style="--paint:#d3a43c" aria-label="Gold"></button></div>
+        <label class="upload-btn" for="model-file">＋ &nbsp; IMPORT BUS MODEL (.GLB)</label><input id="model-file" type="file" accept=".glb,model/gltf-binary" hidden>
+        <div id="model-status" class="model-status">Using the built-in Dhaka intercity coach</div>
+      </div>
     </section>
     <div class="mobile-controls" id="mobile-controls">
       <div class="steer-controls"><button data-control="left" aria-label="Steer left">‹</button><button data-control="right" aria-label="Steer right">›</button></div>
-      <div class="pedal-controls"><button data-control="brake" class="brake"><span>Ⅱ</span><small>BRAKE</small></button><button data-control="gas" class="gas"><span>▲</span><small>GO</small></button></div>
+      <div class="pedal-controls"><button data-control="reverse" class="reverse"><span>R</span><small>REVERSE</small></button><button data-control="brake" class="brake"><span>Ⅱ</span><small>BRAKE</small></button><button data-control="gas" class="gas"><span>▲</span><small>THROTTLE</small></button></div>
     </div>
-    <div class="bottom-note"><span class="sun-icon">☀</span> CLEAR SKIES IN BANGLADESH <span class="bottom-divider"></span> <b>SAFE TRIP, DRIVER</b></div>
+    <div class="bottom-note"><span class="sun-icon">☀</span> DHAKA CITY <span class="bottom-divider"></span> <b id="world-coords">23.72° N · 90.41° E</b></div>
     <div class="pause-wrap"><button id="pause-btn" class="pause-btn" aria-label="Pause game">Ⅱ</button></div>
   </main>
   <script type="module" src="game.js"></script>
