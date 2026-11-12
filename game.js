@@ -1,4 +1,5 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const mount = document.querySelector('#scene');
 const scene = new THREE.Scene();
@@ -31,6 +32,34 @@ const mats = {
   tree: mat(0x416e49), leaf2: mat(0x6d914e), trunk: mat(0x77583b), hut: mat(0xc79c65), roof: mat(0x9c5140), sign: mat(0xf4e8c1),
   white: mat(0xf3edda), lamp: new THREE.MeshStandardMaterial({ color: 0xffe6a3, emissive: 0xffbd4d, emissiveIntensity: 1.25 }),
 };
+
+const gltfLoader = new GLTFLoader();
+const modelUrl = './assets/roadside-landmark.glb';
+
+function loadImportedModel() {
+  gltfLoader.load(
+    modelUrl,
+    (gltf) => {
+      const model = gltf.scene;
+      model.name = 'customModel';
+      model.scale.setScalar(7.6);
+      model.rotation.y = Math.PI;
+      model.position.y = 1.62;
+      model.traverse((obj) => {
+        if (obj.isMesh) {
+          obj.castShadow = true;
+          obj.receiveShadow = true;
+        }
+      });
+      scene.add(model);
+      scenery.push({ group: model, x: 9.3, offset: 130, spacing: 1550 });
+    },
+    undefined,
+    (error) => {
+      console.warn('Could not load roadside landmark:', error);
+    }
+  );
+}
 function box(parent, size, material, pos, cast = true) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size), material); mesh.position.set(...pos); mesh.castShadow = cast; mesh.receiveShadow = true; parent.add(mesh); return mesh;
 }
@@ -145,21 +174,36 @@ function createTraffic(index) {
 }
 const traffic=[];
 for(let i=0;i<7;i++){const car={group:createTraffic(i),distance:68+i*36,lane:[-3.85,0,3.85][(i*7+1)%3],passed:false};car.group.position.set(car.lane,0,-car.distance*.24-1.6);traffic.push(car);}
+loadImportedModel();
 
 // Controls and game state
 const ui={speed:document.querySelector('#speed-value'),speedBar:document.querySelector('#speed-bar'),distance:document.querySelector('#distance-value'),progress:document.querySelector('#progress-bar'),remaining:document.querySelector('#remaining-value'),score:document.querySelector('#score-value'),gear:document.querySelector('#gear-value'),toast:document.querySelector('#toast')};
 const keys={left:false,right:false,gas:false,brake:false};
-let running=false,paused=false,crashed=false,muted=true;
+let running=false,paused=false,muted=true;
 let speed=0, distance=0, score=0, targetX=0, currentX=0, lastTime=performance.now(), toastTimer=0;
-const routeLength=280;
+const routeLength=8;
 function showToast(text){ui.toast.textContent=text;ui.toast.classList.add('show');toastTimer=1.5;}
 function startGame(){
-  document.querySelector('#welcome').classList.add('hidden');document.querySelector('#crash').classList.add('hidden');
-  running=true;paused=false;crashed=false;speed=0;distance=0;score=0;targetX=0;currentX=0;bus.position.x=0;
+  document.querySelector('#welcome').classList.add('hidden');
+  document.querySelector('#crash').classList.add('hidden');
+  document.querySelector('#complete').classList.add('hidden');
+  running=true;paused=false;speed=0;distance=0;score=0;targetX=0;currentX=0;bus.position.x=0;
+  keys.left=keys.right=keys.gas=keys.brake=false;
   traffic.forEach((car,i)=>{car.distance=64+i*37;car.lane=[-3.85,0,3.85][(i*7+1)%3];car.passed=false;});
   document.querySelector('#pause-btn').textContent='Ⅱ'; updateUI();
 }
-function finishGame(){running=false;crashed=true;speed=0;document.querySelector('#final-distance').textContent=distance.toFixed(1)+' km';document.querySelector('#final-score').textContent=Math.floor(score)+' pts';document.querySelector('#crash').classList.remove('hidden');}
+function finishGame(){
+  running=false;speed=0;
+  document.querySelector('#final-distance').textContent=distance.toFixed(1)+' km';
+  document.querySelector('#final-score').textContent=Math.floor(score)+' pts';
+  document.querySelector('#crash').classList.remove('hidden');
+}
+function finishRoute(){
+  running=false;paused=false;speed=0;distance=routeLength;score+=2500;
+  document.querySelector('#final-distance-complete').textContent=distance.toFixed(1)+' km';
+  document.querySelector('#final-score-complete').textContent=Math.floor(score)+' pts';
+  document.querySelector('#complete').classList.remove('hidden');
+}
 function steer(dir){targetX=Math.max(-4.05,Math.min(4.05,targetX+dir*1.9));}
 function setKey(code,on){if(code==='ArrowLeft'||code==='KeyA')keys.left=on;if(code==='ArrowRight'||code==='KeyD')keys.right=on;if(code==='ArrowUp'||code==='KeyW')keys.gas=on;if(code==='ArrowDown'||code==='KeyS'||code==='Space')keys.brake=on;}
 window.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(e.code))e.preventDefault();if(e.code==='Escape'||e.code==='KeyP'){togglePause();return;}setKey(e.code,true);});
@@ -169,6 +213,7 @@ function togglePause(){if(!running)return;paused=!paused;document.querySelector(
 document.querySelector('#pause-btn').addEventListener('click',togglePause);
 document.querySelector('#start-btn').addEventListener('click',startGame);
 document.querySelector('#retry-btn').addEventListener('click',startGame);
+document.querySelector('#finish-btn').addEventListener('click',startGame);
 document.querySelector('#sound-btn').addEventListener('click',()=>{muted=!muted;document.querySelector('#sound-icon').textContent=muted?'♫':'♪';showToast(muted?'SOUND OFF':'SOUND ON');});
 for(const button of document.querySelectorAll('[data-control]')){
   const name=button.dataset.control;
@@ -197,7 +242,7 @@ function updateWorld(dt){
       if(gap < -7){if(!car.passed&&Math.abs(currentX-car.lane)<2.35){score+=240;showToast('CLOSE CALL +240');}car.passed=true;car.distance=distance*1000+230+Math.random()*180;car.lane=[-3.85,0,3.85][Math.floor(Math.random()*3)];car.passed=false;}
       if(gap>0&&gap<8&&Math.abs(currentX-car.lane)<2.05){finishGame();break;}
     }
-    if(distance>=routeLength){distance=0;score+=2500;traffic.forEach((car,i)=>car.distance=distance*1000+75+i*39);showToast('ROUTE COMPLETE +2500');}
+    if(distance>=routeLength)finishRoute();
     if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)ui.toast.classList.remove('show');}
     updateUI();
   }

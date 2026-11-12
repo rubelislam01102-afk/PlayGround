@@ -9,6 +9,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+      }
+    }
+  </script>
 </head>
 <body>
   <main id="game-shell">
@@ -21,7 +29,7 @@
     </header>
     <section class="dashboard" aria-live="polite">
       <div class="metric speed-metric"><div class="metric-label"><span class="tiny-icon">◉</span> SPEED</div><div class="speed-line"><strong id="speed-value">000</strong><span>KM/H</span></div><div class="speed-track"><i id="speed-bar"></i></div></div>
-      <div class="metric distance-metric"><div class="metric-label"><span class="tiny-icon">↗</span> DISTANCE</div><div class="distance-line"><strong id="distance-value">0.0</strong><span>KM</span></div><div class="route-progress"><i id="progress-bar"></i></div><div class="destination"><span>START</span><span>CHITTAGONG <b id="remaining-value">280 KM</b></span></div></div>
+      <div class="metric distance-metric"><div class="metric-label"><span class="tiny-icon">↗</span> DISTANCE</div><div class="distance-line"><strong id="distance-value">0.0</strong><span>KM</span></div><div class="route-progress"><i id="progress-bar"></i></div><div class="destination"><span>START</span><span>CHITTAGONG <b id="remaining-value">8 KM</b></span></div></div>
       <div class="metric score-metric"><div class="metric-label"><span class="tiny-icon">✦</span> TRIP SCORE</div><div class="score-line"><strong id="score-value">00000</strong><span>PTS</span></div><div class="score-caption">SAFE DRIVING BONUS</div></div>
     </section>
     <div class="gear-badge"><span class="gear-dot"></span><span id="gear-value">D</span><small>AUTO</small></div>
@@ -33,7 +41,7 @@
         <div class="eyebrow"><span></span> YOUR JOURNEY BEGINS HERE</div>
         <h1>Bus Simulator<br><em>BD</em></h1>
         <p class="welcome-copy">Take the wheel on the roads of Bangladesh.</p>
-        <div class="trip-card"><div class="trip-icon">⌁</div><div><b>Dhaka to Chittagong</b><span>Highway drive · 280 km route</span></div><div class="trip-arrow">↗</div></div>
+        <div class="trip-card"><div class="trip-icon">⌁</div><div><b>Dhaka to Chittagong</b><span>Highway drive · 8 km route</span></div><div class="trip-arrow">↗</div></div>
         <button id="start-btn" class="start-btn"><span>START YOUR ENGINE</span><b>→</b></button>
         <div class="controls-note"><span>⌨</span> ARROW KEYS / WASD <i>·</i> <span>☝</span> TOUCH CONTROLS</div>
       </div>
@@ -41,6 +49,9 @@
     </section>
     <section id="crash" class="modal-layer hidden">
       <div class="welcome-card result-card"><div class="eyebrow"><span class="red-dot"></span> TRIP INTERRUPTED</div><h2>Easy there,<br><em>driver.</em></h2><p class="welcome-copy">A little more care will get you there.</p><div class="result-stats"><div><b id="final-distance">0.0 km</b><span>DISTANCE</span></div><div><b id="final-score">0 pts</b><span>TRIP SCORE</span></div></div><button id="retry-btn" class="start-btn"><span>DRIVE AGAIN</span><b>↻</b></button></div>
+    </section>
+    <section id="complete" class="modal-layer hidden">
+      <div class="welcome-card result-card"><div class="eyebrow"><span class="green-dot"></span> ROUTE COMPLETE</div><h2>Welcome to<br><em>Chittagong.</em></h2><p class="welcome-copy">The journey is done — a safe, steady run brings the bus home.</p><div class="result-stats"><div><b id="final-distance-complete">0.0 km</b><span>DISTANCE</span></div><div><b id="final-score-complete">0 pts</b><span>TRIP SCORE</span></div></div><button id="finish-btn" class="start-btn"><span>RUN IT AGAIN</span><b>↻</b></button></div>
     </section>
     <div class="mobile-controls" id="mobile-controls">
       <div class="steer-controls"><button data-control="left" aria-label="Steer left">‹</button><button data-control="right" aria-label="Steer right">›</button></div>
